@@ -2,12 +2,10 @@ import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FcPlus } from "react-icons/fc";
-import { toast } from "react-toastify";
-import { putUpdateUser } from "../../../services/apiService";
 import _ from "lodash";
 
 const ModalViewUser = (props) => {
-  const { show, setShow, dataUpdate } = props;
+  const { show, setShow, dataUpdate, setDataUpdate } = props;
 
   const handleClose = () => {
     setShow(false);
@@ -17,6 +15,7 @@ const ModalViewUser = (props) => {
     setRole("user");
     setImage("");
     setPreviewImage("");
+    setDataUpdate();
   };
 
   const [email, setEmail] = useState("");
@@ -43,19 +42,6 @@ const ModalViewUser = (props) => {
     if (e.target && e.target.files && e.target.files[0]) {
       setPreviewImage(URL.createObjectURL(e.target.files[0]));
       setImage(e.target.files[0]);
-    }
-  };
-
-  const handleSubmitCreateUser = async () => {
-    let data = await putUpdateUser(dataUpdate.id, username, role, image);
-    if (data && data.EC === 0) {
-      toast.success(data.EM);
-      handleClose();
-      await props.fetchListUser();
-    }
-
-    if (data && data.EC !== 0) {
-      toast.error(data.EM);
     }
   };
 

@@ -48,8 +48,10 @@ const SideBar = (props) => {
               whiteSpace: "nowrap",
             }}
           >
-            <DiReact size={"3em"} color={"00bfff"} />
-            <span>Timmy Pro vip</span>
+            <Link to="/">
+              <DiReact size={"3em"} color={"00bfff"} />
+              <span>Timmy Pro vip</span>
+            </Link>
           </div>
         </SidebarHeader>
 

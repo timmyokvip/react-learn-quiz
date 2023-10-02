@@ -25,7 +25,7 @@ const TableUser = (props) => {
                 <td>
                   <button
                     className="btn btn-info"
-                    onClick={() => props.handleClickBtnView()}
+                    onClick={() => props.handleClickBtnView(item)}
                   >
                     View
                   </button>
