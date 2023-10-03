@@ -2,12 +2,18 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { postLogin } from "../../services/apiService";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { doLogin } from "../../redux/action/userAction";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import "./login.css";
 
 const Login = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
   const validateEmail = (email) => {
     return String(email)
@@ -28,15 +34,19 @@ const Login = (props) => {
       toast("invalid password");
       return;
     }
+    setIsLoading(true);
 
     // submit api
     let data = await postLogin(email, password);
     if (data && data.EC === 0) {
+      dispatch(doLogin(data));
       toast.success(data.EM);
+      setIsLoading(false);
       navigate("/");
     }
     if (data && +data.EC !== 0) {
       toast.error(data.EM);
+      setIsLoading(false);
     }
   };
 
@@ -80,7 +90,11 @@ const Login = (props) => {
           <button
             className="w-100 btn btn-dark my-5"
             onClick={() => handleLogin()}
+            disabled={isLoading}
           >
+            {isLoading === true && (
+              <AiOutlineLoading3Quarters className="loaderIcon" />
+            )}
             Login{" "}
           </button>
         </div>
