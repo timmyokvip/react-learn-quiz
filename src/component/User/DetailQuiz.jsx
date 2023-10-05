@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { getDataQuiz } from "../../services/apiService";
+import { getDataQuiz, postSubmitQuiz } from "../../services/apiService";
 import _ from "lodash";
 import Question from "./Question";
+import ModalResult from "./ModalResult";
 
 const DetailQuiz = (props) => {
   const params = useParams();
@@ -11,6 +12,8 @@ const DetailQuiz = (props) => {
 
   const [dataQuiz, setDataQuiz] = useState([]);
   const [index, setIndex] = useState(0);
+  const [showModalResult, setShowModalResult] = useState(false);
+  const [dataModalResult, setDataModalResult] = useState({});
 
   useEffect(() => {
     fetchQuestions();
@@ -80,6 +83,46 @@ const DetailQuiz = (props) => {
     }
   };
 
+  const handleFinish = async () => {
+    let payload = {
+      quizId: +quizId,
+      answers: [],
+    };
+    let answers = [];
+    if (dataQuiz && dataQuiz.length > 0) {
+      dataQuiz.forEach((question) => {
+        let questionId = question.questionId;
+        let userAnswerId = [];
+
+        question.answers.forEach((ans) => {
+          if (ans.isSelected) {
+            userAnswerId.push(ans.id);
+          }
+        });
+
+        answers.push({
+          questionId: +questionId,
+          userAnswerId: userAnswerId,
+        });
+      });
+      payload.answers = answers;
+
+      // submit api
+      let res = await postSubmitQuiz(payload);
+
+      if (res && res.EC === 0) {
+        setDataModalResult({
+          countCorrect: res.DT.countCorrect,
+          countTotal: res.DT.countTotal,
+          quizData: res.DT.quizData,
+        });
+        setShowModalResult(true);
+      } else {
+        alert("somthing wrong");
+      }
+    }
+  };
+
   return (
     <div className="container d-flex mt-5 gap-3  ">
       <div className="border border-success col-8">
@@ -102,13 +145,18 @@ const DetailQuiz = (props) => {
           <button className="btn btn-success" onClick={() => handleNext()}>
             Next
           </button>
-          <button className="btn btn-warning" onClick={() => handleNext()}>
+          <button className="btn btn-warning" onClick={() => handleFinish()}>
             Finish
           </button>
         </footer>
       </div>
 
       <div className="border border-danger col-4">count down</div>
+      <ModalResult
+        show={showModalResult}
+        setShow={setShowModalResult}
+        dataModalResult={dataModalResult}
+      />
     </div>
   );
 };
