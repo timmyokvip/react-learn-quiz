@@ -1,18 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { AiOutlinePlusCircle, AiFillMinusCircle } from "react-icons/ai";
 import { FcAddImage } from "react-icons/fc";
 import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
 import Lightbox from "react-awesome-lightbox";
+import {
+  getAllQuizForAdmin,
+  postCreateNewAnswerForQuestion,
+  postCreateNewQuestionForQuiz,
+} from "../../../../services/apiService";
+import { toast } from "react-toastify";
 
 const Questions = (props) => {
-  const options = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-  ];
-  const [selectedQuiz, setSelectedQuiz] = useState({});
   const [questions, setQuestions] = useState([
     {
       id: uuidv4(),
@@ -28,12 +28,30 @@ const Questions = (props) => {
       ],
     },
   ]);
-
   const [isPreviewImage, setIsPreviewImage] = useState(false);
   const [dataImagePreview, setDataImagePreview] = useState({
     title: "",
     url: "",
   });
+  const [listQuiz, setListQuiz] = useState([]);
+  const [selectedQuiz, setSelectedQuiz] = useState({});
+
+  useEffect(() => {
+    fetchQuiz();
+  }, []);
+
+  const fetchQuiz = async () => {
+    let res = await getAllQuizForAdmin();
+    if (res && res.EC === 0) {
+      let newQuiz = res.DT.map((item) => {
+        return {
+          value: item.id,
+          label: `${item.id} - ${item.description}`,
+        };
+      });
+      setListQuiz(newQuiz);
+    }
+  };
 
   const handleAddRemoveQues = (type, id) => {
     if (type === "ADD") {
@@ -134,7 +152,47 @@ const Questions = (props) => {
     }
   };
 
-  const handleSubmit = () => {};
+  const handleSubmitQuestionForQuiz = async () => {
+    // validate data
+    if (_.isEmpty(selectedQuiz)) {
+      toast.error("pls choose a Quiz");
+      return;
+    }
+    // validate answer
+    let isValid = true;
+    let indexQ = 0,
+      indexA = 0;
+    for (let i = 0; i < questions.length; i++) {
+      for (let j = 0; j < questions[i].answers.length; j++) {
+        if (!questions[i].answers[j].description) {
+          isValid = false;
+          indexA = j;
+          break;
+        }
+      }
+      indexQ = i;
+      if (isValid === false) break;
+    }
+    // validate ques
+
+    // submit question
+    for (const question of questions) {
+      const q = await postCreateNewQuestionForQuiz(
+        +selectedQuiz.value,
+        question.description,
+        question.imageFile
+      );
+      // submit answer
+
+      for (const answer of question.answers) {
+        await postCreateNewAnswerForQuestion(
+          answer.description,
+          answer.isCorrect,
+          q.DT.id
+        );
+      }
+    }
+  };
 
   const handlePreviewImage = (questionId) => {
     let questionsClone = _.cloneDeep(questions);
@@ -152,12 +210,13 @@ const Questions = (props) => {
     <div className="container">
       <div className="title">Manage question</div>
       <div className="add-new-question">
-        <div className="col-6 form-group">
+        <div className="col-6 form-group ">
           <label htmlFor="">Select Quiz:</label>
           <Select
             value={selectedQuiz}
             onChange={setSelectedQuiz}
-            options={options}
+            options={listQuiz}
+            className="z-3"
           />
         </div>
         <div className="mt-3">Add question:</div>
@@ -197,7 +256,6 @@ const Questions = (props) => {
                         handleOnchangeFileQuestion(question.id, event);
                       }}
                     />
-
                     <span>
                       {question.imageName ? (
                         <span onClick={() => handlePreviewImage(question.id)}>
@@ -298,7 +356,10 @@ const Questions = (props) => {
           })}
         {questions && questions.length > 0 && (
           <div>
-            <button className="btn btn-warning" onClick={() => handleSubmit()}>
+            <button
+              className="btn btn-warning"
+              onClick={() => handleSubmitQuestionForQuiz()}
+            >
               Save Questions
             </button>
           </div>
