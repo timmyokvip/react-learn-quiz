@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { postSignUp } from "../../services/apiService";
 import { toast } from "react-toastify";
+import Language from "../Header/Language";
 
 const SignUp = () => {
   const [username, setUsername] = useState("");
@@ -52,12 +53,15 @@ const SignUp = () => {
       <div className="container p-4 ">
         <div className="header d-flex justify-content-between">
           <span>U have account ???</span>
-          <button
-            className="btn btn-secondary"
-            onClick={() => navigate("/login")}
-          >
-            Login
-          </button>
+          <div className="d-flex align-items-center gap-3">
+            <button
+              className="btn btn-secondary"
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </button>
+            <Language />
+          </div>
         </div>
 
         <div className="welcome col-4 mx-auto">SIGNUP</div>

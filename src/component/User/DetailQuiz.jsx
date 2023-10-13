@@ -4,6 +4,7 @@ import { getDataQuiz, postSubmitQuiz } from "../../services/apiService";
 import _ from "lodash";
 import Question from "./Question";
 import ModalResult from "./ModalResult";
+import RightContent from "./QuizContent/RightContent";
 
 const DetailQuiz = (props) => {
   const params = useParams();
@@ -131,7 +132,7 @@ const DetailQuiz = (props) => {
         <div className="body">
           <img alt="" />
         </div>
-        <div className="content container mt-3  ">
+        <div className="content container mt-3">
           <Question
             index={index}
             handleCheckbox={handleCheckbox}
@@ -151,7 +152,13 @@ const DetailQuiz = (props) => {
         </footer>
       </div>
 
-      <div className="border border-danger col-4">count down</div>
+      <div className="border border-danger col-4 container">
+        <RightContent
+          dataQuiz={dataQuiz}
+          handleFinish={handleFinish}
+          setIndex={setIndex}
+        />
+      </div>
       <ModalResult
         show={showModalResult}
         setShow={setShowModalResult}

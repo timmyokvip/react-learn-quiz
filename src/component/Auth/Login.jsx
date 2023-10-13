@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { doLogin } from "../../redux/action/userAction";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import "./login.css";
+import Language from "../Header/Language";
 
 const Login = (props) => {
   const [email, setEmail] = useState("");
@@ -49,17 +50,25 @@ const Login = (props) => {
       setIsLoading(false);
     }
   };
+  const handleKeyDown = (event) => {
+    if (event && event.key === "Enter") {
+      handleLogin();
+    }
+  };
 
   return (
     <div className="container p-4 ">
       <div className="header d-flex justify-content-between">
         <span>U dont have account ???</span>
-        <button
-          className="btn btn-secondary"
-          onClick={() => navigate("/sign-up")}
-        >
-          Sign up
-        </button>
+        <div className="d-flex align-items-center gap-3">
+          <button
+            className="btn btn-secondary"
+            onClick={() => navigate("/sign-up")}
+          >
+            Sign up
+          </button>
+          <Language />
+        </div>
       </div>
 
       <div className="welcome col-4 mx-auto">Hello, hi hihi</div>
@@ -82,6 +91,7 @@ const Login = (props) => {
             className="form-control"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(event) => handleKeyDown(event)}
           />
         </div>
 

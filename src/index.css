@@ -74,3 +74,11 @@ video {
   border-radius: 5px;
   height: 40px;
 }
+
+.app-content {
+  height: calc(100vh - 60px);
+}
+
+.languages .dropdown-toggle::after {
+  display: none !important;
+}

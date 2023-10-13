@@ -18,7 +18,7 @@ const ListQuiz = (props) => {
   };
 
   return (
-    <div className="container d-flex gap-3">
+    <div className="container d-flex flex-wrap gap-3">
       {arrQuiz &&
         arrQuiz.length > 0 &&
         arrQuiz.map((quiz, index) => {
